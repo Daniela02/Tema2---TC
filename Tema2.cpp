@@ -7,184 +7,184 @@
 using namespace std;
 ifstream f("input.txt");
 
-struct Production {
+struct Productie {
 	char nonterminal;
-	string rightSide;
+	string rezultat;
 };
 
 struct Earley {
 	char nonterminal;
-	string left, right;
+	string stanga, dreapta;
 	int j;
 
 };
 
-struct Grammar {
-	set<char> nonterminalSet;
+struct Gramatica {
+	set<char> multimeNonTerminale;
 	char start;
-	set<char> terminalSet;
-	vector<Production> productionVector;
-
-	void calculateLamdas() 
+	set<char> multimeTerminale;
+	vector<Productie> vectorProductii;
+	set<char>lambdaTerminale;
+	void calculeazaLambda()
 	{
-		bool canContinue = true;
-		while (canContinue) 
+		bool continua = true;
+		while (continua)
 		{
-			canContinue = false;
-			for (auto production : productionVector)
+			continua = false;
+			for (auto productie : vectorProductii)
 			{
-				if (lambdaTerminals.find(production.nonterminal) != lambdaTerminals.end()) 
+				if (lambdaTerminale.find(productie.nonterminal) != lambdaTerminale.end())
 					continue;
-				
-				if (production.rightSide == "") 
-				{
-					lambdaTerminals.insert(production.nonterminal);
-					canContinue = true;
-				}
-				else 
-				{
-					bool stringIsOnlyNonterminals = true;
 
-					for (char x : production.rightSide) 
+				if (productie.rezultat == "")
+				{
+					lambdaTerminale.insert(productie.nonterminal);
+					continua = true;
+				}
+				else
+				{
+					bool contineDoarNonterminale = true;
+
+					for (char x : productie.rezultat)
 					{
-						if (islower(x) || lambdaTerminals.find(x) == lambdaTerminals.end()) 
+						if (islower(x) || lambdaTerminale.find(x) == lambdaTerminale.end())
 						{
-							stringIsOnlyNonterminals = false;
+							contineDoarNonterminale = false;
 							break;
 						}
 					}
 
-					if (stringIsOnlyNonterminals) 
-						lambdaTerminals.insert(production.nonterminal);
+					if (contineDoarNonterminale)
+						lambdaTerminale.insert(productie.nonterminal);
 				}
 
 			}
 
 		}
 	}
-	set<char>lambdaTerminals;
+
 };
 
-Grammar grammar;
+Gramatica gramatica;
 
 void citire()
 {
-	int nonterminalNumber;
-	f >> nonterminalNumber;
-	for (int i = 0; i < nonterminalNumber; i++) 
+	int nrNonterminale;
+	f >> nrNonterminale;
+	for (int i = 0; i < nrNonterminale; i++)
 	{
 		char c;
 		f >> c;
-		grammar.nonterminalSet.insert(c);
+		gramatica.multimeNonTerminale.insert(c);
 	}
 
-	f >> grammar.start;
+	f >> gramatica.start;
 
-	int terminalNumber;
-	f >> terminalNumber;
-	for (int i = 0; i < terminalNumber; i++) 
+	int nrTerminale;
+	f >> nrTerminale;
+	for (int i = 0; i < nrTerminale; i++)
 	{
 		char c;
 		f >> c;
-		grammar.terminalSet.insert(c);
+		gramatica.multimeTerminale.insert(c);
 	}
 
-	int productionNumber;
-	f >> productionNumber;
-	for (int i = 0; i < productionNumber; i++) 
+	int nrProductii;
+	f >> nrProductii;
+	for (int i = 0; i < nrProductii; i++)
 	{
-		Production p;
+		Productie p;
 		f >> p.nonterminal;
-		f >> p.rightSide;
-		if (p.rightSide == ".") {
-			p.rightSide = "";
+		f >> p.rezultat;
+		if (p.rezultat == ".") {
+			p.rezultat = "";
 		}
-		grammar.productionVector.push_back(p);
+		gramatica.vectorProductii.push_back(p);
 	}
 }
 
-void push(Earley earlyConfiguration, vector<Earley>& S, bool& canRepeat) 
+void push(Earley configuratie, vector<Earley>& S, bool& repeta)
 {
-	for (int i = 0; i < S.size(); i++) 
+	for (int i = 0; i < S.size(); i++)
 	{
-		if (S[i].right == earlyConfiguration.right && S[i].left == earlyConfiguration.left && S[i].nonterminal == earlyConfiguration.nonterminal && S[i].j == earlyConfiguration.j) 
+		if (S[i].dreapta == configuratie.dreapta && S[i].stanga == configuratie.stanga && S[i].nonterminal == configuratie.nonterminal && S[i].j == configuratie.j)
 			return;
 	}
 
-	canRepeat = true;
-	S.push_back(earlyConfiguration);
+	repeta = true;
+	S.push_back(configuratie);
 }
 
-bool earleyMethod(Grammar grammar, string cuvant) {
+bool metodaEarley(Gramatica gramatica, string cuvant) {
 	vector<vector<Earley> >S(cuvant.length() + 1, vector<Earley>());
 
-	grammar.nonterminalSet.insert('P');
+	gramatica.multimeNonTerminale.insert('P');
 
-	Production prod;
+	Productie prod;
 	prod.nonterminal = 'P';
-	prod.rightSide = "S";
+	prod.rezultat = "S";
 
-	grammar.productionVector.push_back(prod);
+	gramatica.vectorProductii.push_back(prod);
 
-	grammar.calculateLamdas();
-	Earley earlyConfiguration;
-	earlyConfiguration.nonterminal = 'P';
-	earlyConfiguration.left = "";
-	earlyConfiguration.right = "S";
-	earlyConfiguration.j = 0;
+	gramatica.calculeazaLambda();
+	Earley configuratie;
+	configuratie.nonterminal = 'P';
+	configuratie.stanga = "";
+	configuratie.dreapta = "S";
+	configuratie.j = 0;
 
-	S[0].push_back(earlyConfiguration);
+	S[0].push_back(configuratie);
 
 	for (int i = 0; i <= cuvant.length(); i++)
 	{
-		bool canRepeat = true;
-		while (canRepeat) 
+		bool repeta = true;
+		while (repeta)
 		{
-			canRepeat = false;
-			for (int j = 0; j < S[i].size(); j++) 
+			repeta = false;
+			for (int j = 0; j < S[i].size(); j++)
 			{
-				earlyConfiguration = S[i][j];
+				configuratie = S[i][j];
 
-				if (earlyConfiguration.right != "") 
+				if (configuratie.dreapta != "")
 				{	//predictie
-					for (auto productie : grammar.productionVector) 
+					for (auto productie : gramatica.vectorProductii)
 					{
-						if (productie.nonterminal != earlyConfiguration.right.at(0)) 
+						if (productie.nonterminal != configuratie.dreapta.at(0))
 							continue;
-						
+
 						Earley temp;
 						temp.nonterminal = productie.nonterminal;
-						temp.left = "";
-						temp.right = productie.rightSide;
+						temp.stanga = "";
+						temp.dreapta = productie.rezultat;
 						temp.j = i;
 
-						push(temp, S[i], canRepeat);
+						push(temp, S[i], repeta);
 					}
-					if (grammar.lambdaTerminals.find(earlyConfiguration.right.at(0)) != grammar.lambdaTerminals.end()) 
+					if (gramatica.lambdaTerminale.find(configuratie.dreapta.at(0)) != gramatica.lambdaTerminale.end())
 					{
 						Earley temp;
-						temp.nonterminal = earlyConfiguration.nonterminal;
-						temp.left = earlyConfiguration.left + earlyConfiguration.right.at(0);
-						string afterDot(earlyConfiguration.right.begin() + 1, earlyConfiguration.right.end());
-						temp.right = afterDot;
-						temp.j = earlyConfiguration.j;
+						temp.nonterminal = configuratie.nonterminal;
+						temp.stanga = configuratie.stanga + configuratie.dreapta.at(0);
+						string dupaPunct(configuratie.dreapta.begin() + 1, configuratie.dreapta.end());
+						temp.dreapta = dupaPunct;
+						temp.j = configuratie.j;
 
-						push(temp, S[i], canRepeat);
+						push(temp, S[i], repeta);
 
 					}
 				}
-				else 
+				else
 				{
-					for (int jj = 0; jj < S[earlyConfiguration.j].size(); jj++) 
+					for (int jj = 0; jj < S[configuratie.j].size(); jj++)
 					{	//completare
-						if (S[earlyConfiguration.j][jj].right != "" && S[earlyConfiguration.j][jj].right.at(0) == earlyConfiguration.nonterminal)
+						if (S[configuratie.j][jj].dreapta != "" && S[configuratie.j][jj].dreapta.at(0) == configuratie.nonterminal)
 						{
-							Earley temp = S[earlyConfiguration.j][jj];
-							string afterDot(S[earlyConfiguration.j][jj].right.begin() + 1, S[earlyConfiguration.j][jj].right.end());
-							temp.left = temp.left + earlyConfiguration.nonterminal;
-							temp.right = afterDot;
+							Earley temp = S[configuratie.j][jj];
+							string dupaPunct(S[configuratie.j][jj].dreapta.begin() + 1, S[configuratie.j][jj].dreapta.end());
+							temp.stanga = temp.stanga + configuratie.nonterminal;
+							temp.dreapta = dupaPunct;
 
-							push(temp, S[i], canRepeat);
+							push(temp, S[i], repeta);
 						}
 					}
 				}
@@ -193,18 +193,18 @@ bool earleyMethod(Grammar grammar, string cuvant) {
 
 		for (int j = 0; j < S[i].size(); j++)
 		{
-			earlyConfiguration = S[i][j];
+			configuratie = S[i][j];
 
-			if (earlyConfiguration.right != "" && i < cuvant.length() && earlyConfiguration.right.at(0) == cuvant.at(i))
+			if (configuratie.dreapta != "" && i < cuvant.length() && configuratie.dreapta.at(0) == cuvant.at(i))
 			{	//scanare
 				Earley temp;
-				temp.j = earlyConfiguration.j;
-				temp.nonterminal = earlyConfiguration.nonterminal;
-				temp.left = earlyConfiguration.left + earlyConfiguration.right.at(0);
-				string afterDot(earlyConfiguration.right.begin() + 1, earlyConfiguration.right.end());
-				temp.right = afterDot;
+				temp.j = configuratie.j;
+				temp.nonterminal = configuratie.nonterminal;
+				temp.stanga = configuratie.stanga + configuratie.dreapta.at(0);
+				string dupaPunct(configuratie.dreapta.begin() + 1, configuratie.dreapta.end());
+				temp.dreapta = dupaPunct;
 
-				push(temp, S[i + 1], canRepeat);
+				push(temp, S[i + 1], repeta);
 			}
 		}
 
@@ -212,33 +212,33 @@ bool earleyMethod(Grammar grammar, string cuvant) {
 
 		for (int j = 0; j < S[i].size(); j++)
 		{
-			cout << S[i][j].nonterminal << "->" << S[i][j].left << "." << S[i][j].right << "," << S[i][j].j << '\n';
+			cout << S[i][j].nonterminal << "->" << S[i][j].stanga << "." << S[i][j].dreapta << "," << S[i][j].j << '\n';
 		}
 	}
 
-	bool isOk = false;
-	for (auto earlyConfiguration : S[cuvant.length()])
+	bool ok = false;
+	for (auto configuratie : S[cuvant.length()])
 	{
-		int j = earlyConfiguration.j;
-		if (earlyConfiguration.nonterminal = 'P' && earlyConfiguration.right == "" && earlyConfiguration.left == "S" && j == 0)
+		int j = configuratie.j;
+		if (configuratie.nonterminal = 'P' && configuratie.dreapta == "" && configuratie.stanga == "S" && j == 0)
 		{
-			isOk = true;
+			ok = true;
 			break;
 		}
 	}
 
-	return isOk;
+	return ok;
 }
 
 int main()
 {
 	citire();
 	string cuvant;
-	while(f >> cuvant)
+	while (f >> cuvant)
 	{
-		bool isInLanguage = earleyMethod(grammar, cuvant);
-		
-		if (isInLanguage)
+		bool inLimbaj = metodaEarley(gramatica, cuvant);
+
+		if (inLimbaj)
 			cout << "Cuvantul " << cuvant << " " << "se afla in limbaj\n";
 		else
 			cout << "Cuvantul " << cuvant << " " << "nu se afla in limbaj\n";
