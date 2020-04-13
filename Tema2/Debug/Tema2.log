@@ -1,0 +1,9 @@
+﻿  Tema2.cpp
+E:\Informatica\anul III\Sem II\TC\Tema2\Tema2.cpp(107,20): warning C4018: '<': signed/unsigned mismatch
+E:\Informatica\anul III\Sem II\TC\Tema2\Tema2.cpp(134,20): warning C4018: '<=': signed/unsigned mismatch
+E:\Informatica\anul III\Sem II\TC\Tema2\Tema2.cpp(139,22): warning C4018: '<': signed/unsigned mismatch
+E:\Informatica\anul III\Sem II\TC\Tema2\Tema2.cpp(171,26): warning C4018: '<': signed/unsigned mismatch
+E:\Informatica\anul III\Sem II\TC\Tema2\Tema2.cpp(187,21): warning C4018: '<': signed/unsigned mismatch
+E:\Informatica\anul III\Sem II\TC\Tema2\Tema2.cpp(190,44): warning C4018: '<': signed/unsigned mismatch
+E:\Informatica\anul III\Sem II\TC\Tema2\Tema2.cpp(204,21): warning C4018: '<': signed/unsigned mismatch
+  Tema2.vcxproj -> E:\Informatica\anul III\Sem II\TC\Tema2\Debug\Tema2.exe
